@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -Wall #-}
-module LogAnlysis where
+module LogAnalysis where
 import Data.List
 import Log
 
@@ -25,3 +25,16 @@ parseMessage xs = Unknown xs
 
 parse :: String -> [LogMessage]
 parse text = [parseMessage line | line <- lines text]
+
+-- ex2
+insert :: LogMessage -> MessageTree -> MessageTree
+insert (Unknown _) tree = tree
+insert message Leaf = Node Leaf message Leaf
+insert message (Node l m r) =
+  if getTStamp(message) < getTStamp(m)
+  then Node (LogAnalysis.insert message l) m r
+  else Node l m (LogAnalysis.insert message r)
+
+getTStamp :: LogMessage -> Int
+getTStamp (Unknown _) = 0
+getTStamp (LogMessage _ t _) = t

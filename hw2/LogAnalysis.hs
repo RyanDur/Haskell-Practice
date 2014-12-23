@@ -1,24 +1,24 @@
 {-# OPTIONS_GHC -Wall #-}
 module LogAnalysis where
-import Data.List
+
 import Log
 
 -- ex1
 parseMessage :: String -> LogMessage
 parseMessage ('E':xs) =
   let err = Error((read(head(words xs))))
-      tStamp = read(head(tail(words xs))) :: TimeStamp
-      message = intercalate " " (tail(tail(words xs)))
+      tStamp = read (head(tail(words xs))) :: TimeStamp
+      message = unwords (tail(tail(words xs)))
   in LogMessage err tStamp message
 
 parseMessage ('I':xs) =
   let tStamp = read(head(words xs)) :: TimeStamp
-      message = intercalate " " (tail(words xs))
+      message = unwords (tail(words xs))
   in LogMessage Info tStamp message
 
 parseMessage ('W':xs) =
   let tStamp = read(head(words xs)) :: TimeStamp
-      message = intercalate " " (tail(words xs))
+      message = unwords (tail(words xs))
   in LogMessage Warning tStamp message
 
 parseMessage xs = Unknown xs
@@ -38,3 +38,8 @@ insert message (Node l m r) =
 getTStamp :: LogMessage -> Int
 getTStamp (Unknown _) = 0
 getTStamp (LogMessage _ t _) = t
+
+-- ex3
+build :: [LogMessage] -> MessageTree
+build [] = Leaf
+build (x:xs) = LogAnalysis.insert x (build xs)

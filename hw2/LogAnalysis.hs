@@ -43,3 +43,26 @@ getTStamp (LogMessage _ t _) = t
 build :: [LogMessage] -> MessageTree
 build [] = Leaf
 build (x:xs) = LogAnalysis.insert x (build xs)
+
+-- ex4
+inOrder :: MessageTree -> [LogMessage]
+inOrder Leaf = []
+inOrder (Node l m r) = (inOrder l) ++ [m] ++ (inOrder r)
+
+-- ex5
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong [] = []
+whatWentWrong x = [getMessage s | s <- (inOrder (build x)), (getError s) > 50]
+
+getMessage :: LogMessage -> String
+getMessage (Unknown _) = ""
+getMessage (LogMessage _ _ m) = m
+
+getError :: LogMessage -> Int
+getError (Unknown _) = 0
+getError (LogMessage e _ _) = get e
+
+get :: MessageType -> Int
+get Info = 0
+get Warning = 0
+get (Error e) = e
